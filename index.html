@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Elite Solar Winwheel</title>
+  <script src="./Winwheel.min.js"></script>
+  <script src="./TweenMax.min.js"></script>
+  <style type="text/css">
+    #theWheel {
+      margin-left: -300px;
+    }
+  </style>
+</head>
+<body>
+  <div id="container" align="center">
+    <div id="canvasContainer">
+      <canvas id="theWheel" width="800" height="600"></canvas>
+
+      <script type="text/javascript">
+        function drawHand() {
+          let handCanvas = document.getElementById('theWheel');
+          let ctx = handCanvas.getContext('2d');
+
+          if (ctx) {
+            console.log('got context');
+            ctx.save(); // ctx.translate(200, 150);
+            ctx.rotate(theWheel.degToRad(-20)); // rotate image.
+            ctx.translate(160, 120);
+            ctx.drawImage(handImage, 255, 110); // Draw img @ specified x and y.
+            ctx.restore();
+          }
+        }
+
+        function spinWheel() {
+          theWheel.stopAnimation(false);
+          theWheel.rotationAngle = theWheel.rotationAngle % 360;
+          theWheel.startAnimation();
+        }
+
+        function alertPrize() {
+          let winSeg = theWheel.getIndicatedSegment();
+          // ToDo: fix regex to replace newLine character with (space)
+          let winText = winSeg.text.replace(/\n/, ' ');
+
+          if (winText === "Spin Again!") {
+            console.log(winText);
+            theWheel.stopAnimation(false);
+            theWheel.rotationAngle = theWheel.rotationAngle % 360;
+          } else {
+            console.log(winText);
+            alert("You've won " + winText + "!");
+          }
+        }
+
+        const theWheel = new Winwheel({
+          'canvasId': 'theWheel',
+          'numSegments': 8,
+          'outerRadius': 212,
+          'innerRadius': 75,
+          'lineWidth': 3,
+          'strokeStyle': '#FFFFFF',
+          'textFontSize': 18,
+          'textFontWeight': 800,
+          'textFillStyle': '#FFFFFF',
+          'textLineWidth': 3,
+          'textStrokeStyle': '#000000',
+          'textFontFamily': 'Monospace',
+          'textOrientation': 'curved',
+          'pointerAngle': 20,
+          'segments': [
+            {'fillStyle' : '#f26522', 'text' : 'iTunes\nGift\nCard'},
+            {'fillStyle' : '#e70697', 'text' : 'Chance\nfor Free\nSolar\nInstall'},
+            {'fillStyle' : '#3cb878', 'text' : 'Amazon\nGift\nCard'},
+            {'fillStyle' : '#ee1c24', 'text' : 'Spin\nAgain!'},
+            {'fillStyle' : '#f6989d', 'text' : 'Dunkin\nDonuts\nGift\nCard'},
+            {'fillStyle' : '#00aef0', 'text' : 'In Home\nSolar\nConsult'},
+            {'fillStyle' : '#fff200', 'text' : 'Chance\nto Win\na free\niPad'},
+            {'fillStyle' : '#ee1c24', 'text' : 'Spin\nAgain!'},
+          ],
+          'pins': {
+            'outerRaduis': 5,
+            'fillStyle': 'silver',
+            'margin': 5
+          },
+          'animation': {
+            'type': 'spinToStop',
+            'duration': 6,
+            'spins': 8,
+            'callbackFinished': 'alertPrize()',
+            'callbackAfter': 'drawHand()',
+            'clearTheCanvas': false
+          }
+        });
+
+        const handImage = new Image(); // Create image in memory.
+
+        // Set onload of img to anon func to draw on the canvas once img has loaded.
+        handImage.onload = function() { drawHand(); };
+        // Set source of img. Once loaded onload callback above will be triggered.
+        handImage.src = 'pointing_hand.png';
+      </script>
+
+      <button id="spinWheel" onclick="spinWheel();">Spin the Wheel!</button>
+    </div>
+  </div>
+</body>
+</html>
