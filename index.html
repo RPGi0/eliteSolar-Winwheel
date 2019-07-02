@@ -1,150 +1,193 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Elite Solar Winwheel</title>
-  <script src="./Winwheel.min.js"></script>
-  <script src="./TweenMax.min.js"></script>
-  <style type="text/css">
-    #theWheel {
-      margin-left: -300px;
-    }
+  <head>
+    <title>Elite Solar Winwheel</title>
+    <script src="./Winwheel.min.js"></script>
+    <script src="./TweenMax.min.js"></script>
+    <style type="text/css">
+      #theWheel {
+        margin-left: -300px;
+      }
 
-    .winBox {
-      display: none;
-      position: fixed;
-      z-index: 1;
-      left: 25%;
-      top: 25%;
-      width: 70%;
-      height: 70%;
-      overflow: auto;
-      background-color: 'grey';
-    }
+      .winBox {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 25%;
+        top: 25%;
+        width: 70%;
+        height: 70%;
+        overflow: auto;
+        background-color: 'grey';
+      }
 
-    .winBox-content {
-      background-color: #fefefe;
-      margin: 15% auto;
-      padding: 20px;
-      border: 1px solid #888;
-      width: 80%;
-    }
+      .winBox-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+      }
 
-    .close {
-      color: #aaa;
-      float: right;
-      font-size: 28px;
-      font-weight: bold;
-    }
+      .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+      }
 
-    .close:hover, .close:focus {
-      color: black;
-      text-decoration: none;
-      cursor: pointer;
-    }
+      .close:hover, .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+      }
 
-    #youWon {
-      position: fixed;
-      display: block;
-      width: 80%;
-      margin: 0 auto 0 10%;
-      text-align: center;
-      background-image: linear-gradient(to bottom, rgb(30, 204, 222), rgb(10, 122, 234));
-      padding: 10px;
-      top: 200px;
-      color: white;
-      font-family: 'Helvetica Neue', Calibri, 'Segoe UI', Arial, Helvetica, sans-serif;
-      box-shadow: 0 5px 10px #224;
-      border-radius: 8px;
-      height: 115ßßpx;
-      transition: all 200ms ease-in-out;
-    }
+      #youWon {
+        position: fixed;
+        display: block;
+        width: 80%;
+        margin: 0 auto 0 10%;
+        text-align: center;
+        background-image: linear-gradient(to bottom, rgb(30, 204, 222), rgb(10, 122, 234));
+        padding: 10px;
+        top: 200px;
+        color: white;
+        font-family: 'Helvetica Neue', Calibri, 'Segoe UI', Arial, Helvetica, sans-serif;
+        box-shadow: 0 5px 10px #224;
+        border-radius: 8px;
+        height: 115px;
+        transition: all 200ms ease-in-out;
+      }
 
-    #redirectCountdown {
-      font-size: 13px;
-    }
+      #redirectCountdown {
+        font-size: 13px;
+      }
 
-    #winLink {
-      font-size: 20px;
-      color: #ffff00;
-    }
-  </style>
-</head>
-<body>
-  <div id="container" align="center">
-    <div id="canvasContainer">
-      <canvas id="theWheel" width="800" height="600"></canvas>
+      #winLink {
+        font-size: 20px;
+        color: #ffff00;
+      }
 
-      <script type="text/javascript">
-        let redirectSeconds = 10;
-        let redirectUrl = 'https://elitesolarpros.com/';
-        const redirectUrls = {
-          'Chance to win a Free Solar Install': 'free-solar-install-contest/',
-          'In Home Solar Consult': 'contact-a-solar-pro-save-energy-today/',
-          'Chance to Win a Free iPad' : 'win-a-free-ipad/',
-          'iTunes Gift Card': 'collect-your-itunes-gift-card/',
-          'Amazon Gift Card': 'collect-your-amazon-gift-card/',
-          'Dunkin Donuts Gift Card': 'collect-your-dunkin-gift-card/'
-        };
+      #spinWheel {
+        background-color: #0652FD;
+        background-image: linear-gradient(to top, #0652FD, #228ce6);
+        color: white;
+        font-family: 'Helvetica Neue', Calibri, 'Segoe UI', Arial, Helvetica, sans-serif;
+        padding: 24px 32px;
+        font-size: 32px;
+        text-transform: uppercase;
+        border-radius: 44px;
+        letter-spacing: 0.03em;
+        border: ridge 3px #0da6ff;
+        box-shadow: 2px 2px 4px rgba(0,0,0,0.57);
+        text-shadow: 1px 1px 0 yellow;
+        position: fixed;
+        top: 46%;
+        left: 50%;
+        margin-left: -164px;
+        outline: none !important;
+      }
 
-        function drawHand() {
-          let handCanvas = document.getElementById('theWheel');
-          let ctx = handCanvas.getContext('2d');
+      #spinWheel:hover {
+        background-color: #6eca08;
+        background-image: linear-gradient(to top, #5e7a01, #ceea08);
+        cursor: pointer;
+      }
 
-          if (ctx) {
-            console.log('got context');
-            ctx.save(); // ctx.translate(200, 150);
-            ctx.rotate(theWheel.degToRad(-20)); // rotate image.
-            ctx.translate(160, 120);
-            ctx.drawImage(handImage, 255, 110); // Draw img @ specified x and y.
-            ctx.restore();
-          }
+      #container {
+        margin: 0 auto;
+        text-align: center;
+      }
+    </style>
+    <script type="text/javascript">
+      let redirectSeconds = 10;
+      let redirectUrl = 'https://elitesolarpros.com/';
+      let theWheel, handImage;
+      const redirectUrls = {
+        'Chance to win a Free Solar Install': 'free-solar-install-contest/',
+        'In Home Solar Consult': 'contact-a-solar-pro-save-energy-today/',
+        'Chance to Win a Free iPad' : 'win-a-free-ipad/',
+        'iTunes Gift Card': 'collect-your-itunes-gift-card/',
+        'Amazon Gift Card': 'collect-your-amazon-gift-card/',
+        'Dunkin Donuts Gift Card': 'collect-your-dunkin-gift-card/'
+      };
+
+      function drawHand() {
+        let handCanvas = document.getElementById('theWheel');
+        let ctx = handCanvas.getContext('2d');
+
+        if (ctx) {
+          ctx.save();
+          ctx.rotate(theWheel.degToRad(-20)); // rotate image.
+          ctx.translate(160, 120);
+          ctx.drawImage(handImage, 255, 110); // Draw img @ specified x and y.
+          ctx.restore();
         }
+      }
 
-        function spinWheel() {
+      function spinWheel() {
+        theWheel.stopAnimation(false);
+        theWheel.rotationAngle = theWheel.rotationAngle % 360;
+        theWheel.startAnimation();
+        document.getElementById('spinWheel').style.display = 'none';
+      }
+
+      function alertPrize() {
+        let winSeg = theWheel.getIndicatedSegment();
+        let winSegText = winSeg.text.replace(/\n/g, ' ');
+        let winUrl = redirectUrl + (redirectUrls[winSegText] ? redirectUrls[winSegText] : '');
+
+        if (winSegText === "Spin Again!") {
           theWheel.stopAnimation(false);
           theWheel.rotationAngle = theWheel.rotationAngle % 360;
-          theWheel.startAnimation();
+        } else {
+          const winBox = document.createElement('div');
+          winBox.setAttribute('id', 'youWon');
+          winBox.innerHTML = `
+            <h3>Congratulations!</h3>
+            <p>To redeem your ${winSegText}, follow the link below!</p>
+            <a id="winLink" href="${winUrl}">Click Here!</a>
+            <p id="redirectCountdown" />`;
+          document.getElementById('container').appendChild(winBox);
+          setTimeout(() => {
+            document.getElementById('youWon').style.height = '150px';
+          }, 800);
+          setInterval(() => {
+            if (redirectSeconds > 0) {
+              redirectSeconds--;
+              document.getElementById('redirectCountdown').innerHTML = `
+                You will be automatically redirected to your prize collection form in
+                ${redirectSeconds} second${redirectSeconds === 1 ? '' : 's'}.
+              `;
+            } else {
+              window.location.href = winUrl;
+            }
+          }, 1000);
         }
+      }
 
-        function alertPrize() {
-          let winSeg = theWheel.getIndicatedSegment();
-          let winSegText = winSeg.text.replace(/\n/g, ' ');
-          let winUrl = redirectUrl + (redirectUrls[winSegText] ? redirectUrls[winSegText] : '');
+      function setUpWinWheelHtml () {
+        if (document.getElementById('container') !== null) return false;
+        const container = document.createElement('div');
+        container.setAttribute('id', 'container');
+        const canvasContainer = document.createElement('div');
+        canvasContainer.setAttribute('id', 'canvasContainer');
+        const canvas = document.createElement('canvas');
+        canvas.setAttribute('id', 'theWheel');
+        canvas.setAttribute('width', '800');
+        canvas.setAttribute('height', '600');
+        const spinButton = document.createElement('button');
+        spinButton.setAttribute('id', 'spinWheel');
+        spinButton.setAttribute('onclick', 'spinWheel();');
+        spinButton.innerHTML = 'Spin the Wheel!';
+        canvasContainer.appendChild(canvas);
+        canvasContainer.appendChild(spinButton);
+        container.appendChild(canvasContainer);
+        document.getElementsByTagName('body')[0].appendChild(container);
 
-
-          if (winSegText === "Spin Again!") {
-            theWheel.stopAnimation(false);
-            theWheel.rotationAngle = theWheel.rotationAngle % 360;
-          } else {
-            const winBox = document.createElement('div');
-            winBox.setAttribute('id', 'youWon');
-            winBox.innerHTML = `
-              <h3>Congratulations!</h3>
-              <p>To redeem your ${winSegText}, follow the link below!</p>
-              <a id="winLink" href="${winUrl}">Follow Me!</a>
-              <p id="redirectCountdown" />`;
-            document.getElementById('container').appendChild(winBox);
-            setTimeout(() => {
-              document.getElementById('youWon').style.height = '150px';
-            }, 800);
-            setInterval(() => {
-              if (redirectSeconds > 0) {
-                redirectSeconds--;
-                document.getElementById('redirectCountdown').innerHTML = `
-                  You will be automatically redirected to your prize collection form in
-                  ${redirectSeconds} second${redirectSeconds === 1 ? '' : 's'}.
-                `;
-              } else {
-                // const newUrl = redirectUrl + (redirectUrls[winSegText] ? redirectUrls[winSegText] : '');
-                window.location.href = winUrl;
-              }
-            }, 1000);
-          }
-        }
-
-        const theWheel = new Winwheel({
+        theWheel = new Winwheel({
           'canvasId': 'theWheel',
-          'numSegments': 8,
+          'numSegments': 6,
           'outerRadius': 212,
           'innerRadius': 75,
           'lineWidth': 3,
@@ -158,14 +201,14 @@
           'textOrientation': 'curved',
           'pointerAngle': 20,
           'segments': [
-            {'fillStyle' : '#f26522', 'text' : 'iTunes\nGift\nCard'},
-            {'fillStyle' : '#e70697', 'text' : 'Chance\nto win a\nFree\nSolar\nInstall'},
-            {'fillStyle' : '#3cb878', 'text' : 'Amazon\nGift\nCard'},
-            {'fillStyle' : '#ee1c24', 'text' : 'Spin\nAgain!'},
-            {'fillStyle' : '#f6989d', 'text' : 'Dunkin\nDonuts\nGift\nCard'},
-            {'fillStyle' : '#00aef0', 'text' : 'In Home\nSolar\nConsult'},
-            {'fillStyle' : '#fff200', 'text' : 'Chance\nto Win\na Free\niPad'},
-            {'fillStyle' : '#ee1c24', 'text' : 'Spin\nAgain!'},
+            {'fillStyle' : '#6eca08', 'text' : 'iTunes\nGift\nCard'},
+            {'fillStyle' : '#15c7fe', 'text' : 'Chance\nto win a\nFree\nSolar\nInstall'},
+            {'fillStyle' : '#6eca08', 'text' : 'Amazon\nGift\nCard'},
+            //{'fillStyle' : '#ee1c24', 'text' : 'Spin\nAgain!'},
+            {'fillStyle' : '#15c7fe', 'text' : 'Dunkin\nDonuts\nGift\nCard'},
+            {'fillStyle' : '#6eca08', 'text' : 'In Home\nSolar\nConsult'},
+            {'fillStyle' : '#15c7fe', 'text' : 'Chance\nto Win\na Free\niPad'},
+            //{'fillStyle' : '#ee1c24', 'text' : 'Spin\nAgain!'},
           ],
           'pins': {
             'outerRaduis': 5,
@@ -182,16 +225,15 @@
           }
         });
 
-        const handImage = new Image(); // Create image in memory.
-
-        // Set onload of img to anon func to draw on the canvas once img has loaded.
-        handImage.onload = function() { drawHand(); };
-        // Set source of img. Once loaded onload callback above will be triggered.
+        handImage = new Image();
+        handImage.onload = drawHand;
         handImage.src = 'pointing_hand.png';
-      </script>
-
-      <button id="spinWheel" onclick="spinWheel();">Spin the Wheel!</button>
-    </div> <!--canvasContainer-->
-  </div> <!--container-->
-</body>
+      }
+    </script>
+  </head>
+  <body>
+    <script>
+      setUpWinWheelHtml();
+    </script>
+  </body>
 </html>
